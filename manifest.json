@@ -1,9 +1,9 @@
 {
   "id": "port-manager",
   "name": "端口管理",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "tier": "js",
-  "author": "hekai",
+  "author": "hekai753",
   "description": "按工作区/进程分组展示本机监听中的 TCP 端口，分组可折叠，支持一键打开浏览器和关闭端口（自动适配 macOS / Linux / Windows）",
   "repo": "hekai753/port-manager",
   "license": "MIT",

@@ -85,4 +85,4 @@ git tag 0.2.1 && git push origin 0.2.1
 
 ## 📄 License
 
-[MIT](LICENSE) © hekai
+[MIT](LICENSE) © hekai753
