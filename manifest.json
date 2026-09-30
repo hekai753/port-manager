@@ -8,6 +8,7 @@
   "repo": "hekai753/port-manager",
   "license": "MIT",
   "keywords": ["ports", "lsof", "netstat", "developer-tools", "端口"],
+  "screenshots": ["docs/screenshot-1.png"],
   "permissions": [
     "ui:center-tab",
     "ui:status-bar",

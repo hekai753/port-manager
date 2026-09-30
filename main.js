@@ -173,8 +173,9 @@ function buildGroups(listeners, hasCwd) {
   for (const l of listeners) {
     let gname;
     if (hasCwd) {
-      gname = l.cwd ? basenameOf(l.cwd) : EXTERNAL_GROUP;
-      if (!l.cwd) external += 1;
+      // cwd 为 "/"（launchd 等系统进程）视为外部端口，不算工作区
+      gname = l.cwd && l.cwd !== "/" ? basenameOf(l.cwd) : EXTERNAL_GROUP;
+      if (gname === EXTERNAL_GROUP) external += 1;
     } else {
       gname = l.cmd || "?";
     }
