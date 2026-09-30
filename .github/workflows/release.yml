@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 语法校验
+        run: node --check main.js
+
+      # 规范 §9.2：tag 必须与 manifest.json 的 version 严格相等（无 v 前缀）
+      - name: 校验 tag 与 manifest version 一致
+        run: |
+          VER=$(node -p "require('./manifest.json').version")
+          TAG="${GITHUB_REF_NAME}"
+          if [ "$VER" != "$TAG" ]; then
+            echo "::error::tag ($TAG) 与 manifest.json version ($VER) 不一致"
+            exit 1
+          fi
+
+      # 规范 §4.2：Release 附件文件名固定为 main.js / manifest.json
+      - name: 附加产物到 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            main.js
+            manifest.json
+          generate_release_notes: true

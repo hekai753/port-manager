@@ -1,0 +1,27 @@
+{
+  "id": "port-manager",
+  "name": "端口管理",
+  "version": "0.2.0",
+  "tier": "js",
+  "author": "hekai",
+  "description": "按工作区/进程分组展示本机监听中的 TCP 端口，分组可折叠，支持一键打开浏览器和关闭端口（自动适配 macOS / Linux / Windows）",
+  "repo": "hekai753/port-manager",
+  "license": "MIT",
+  "keywords": ["ports", "lsof", "netstat", "developer-tools", "端口"],
+  "permissions": [
+    "ui:center-tab",
+    "ui:status-bar",
+    "ui:command",
+    "storage",
+    "exec:uname",
+    "exec:lsof",
+    "exec:ss",
+    "exec:open",
+    "exec:xdg-open",
+    "exec:kill",
+    "exec:netstat",
+    "exec:tasklist",
+    "exec:taskkill",
+    "exec:cmd"
+  ]
+}
