@@ -243,6 +243,9 @@ const s = {
 export default function activate(ctx) {
   const { createElement: h, useState, useEffect, useCallback } = ctx.react;
 
+  // 工作区解析缓存：进程 cwd → 所属 git 仓库顶层目录（null = 非 git 目录）
+  const wsCache = new Map();
+
   // 双语：宿主 locale 以 zh 开头用中文，否则英文
   const t = String(ctx.host.locale || "").toLowerCase().startsWith("zh")
     ? STRINGS["zh-CN"]
@@ -295,7 +298,28 @@ export default function activate(ctx) {
             // cwd 解析失败不致命：按进程名分组
           }
         }
-        for (const l of listeners) l.cwd = cwds[l.pid] || null;
+        // 工作区自动识别：cwd → git rev-parse 反查仓库顶层目录（AgentDemo/xxx/admin → AgentDemo）
+        // 结果按 cwd 缓存，只有新出现的 cwd 才触发 git 调用；非 git 目录回落 basename 分组
+        const cwdSet = [...new Set(Object.values(cwds).filter((c) => c && c !== "/"))];
+        const resolved = await Promise.all(cwdSet.map(async (c) => {
+          if (wsCache.has(c)) return wsCache.get(c);
+          let top = null;
+          try {
+            const r = await run("git", ["-C", c, "rev-parse", "--show-toplevel"], 4000);
+            top = String(r.stdout || "").trim() || null;
+          } catch {
+            top = null; // 无 git / 非 git 仓库 / 超时
+          }
+          wsCache.set(c, top);
+          return top;
+        }));
+        const topByCwd = {};
+        cwdSet.forEach((c, i) => { topByCwd[c] = resolved[i]; });
+        for (const l of listeners) {
+          const c = cwds[l.pid];
+          if (c && c !== "/" && topByCwd[c]) l.cwd = topByCwd[c];
+          else l.cwd = c || null;
+        }
       } catch (e) {
         if (platform === "mac") throw e;
         // Linux 无 lsof：回落 ss（仅能按进程名分组，pid=0 的行无法关闭）

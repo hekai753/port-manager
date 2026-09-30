@@ -12,7 +12,7 @@
 ## ✨ 功能 / Features
 
 - ⚡ **状态栏计数**：实时显示监听中的端口总数，点击直达端口页签，5 秒自动刷新
-- 📁 **按工作区分组**：解析监听进程的工作目录（cwd），以目录名作为工作区分组；无法定位 cwd 的归入「外部端口」，cwd 为 `/` 的系统进程同样视为外部
+- 📁 **按工作区分组（自动识别）**：以进程 cwd 为起点，用 `git rev-parse --show-toplevel` 反查所属 git 仓库的顶层目录作为工作区——子目录里启动的 dev server（如 `AgentDemo/act-assistant/admin`）会自动归到 `AgentDemo` 组；非 git 目录按 cwd 目录名分组；无法定位 cwd 的归入「外部端口」，cwd 为 `/` 的系统进程同样视为外部。识别结果按路径缓存，仅新目录触发一次 git 调用
 - 🗂️ **分组折叠**：点击分组头折叠/展开，折叠状态持久化，重启后保持
 - 🔗 **打开浏览器**：每个端口一键打开 `http://localhost:<port>`
 - 🛑 **关闭端口**：结束监听进程即可释放端口；两段式确认（3 秒内再点一次）防误杀
@@ -24,7 +24,7 @@
 | 能力 | macOS | Linux | Windows |
 |---|---|---|---|
 | 列端口 | `lsof -nP -iTCP -sTCP:LISTEN` | 同左；缺失 lsof 时回落 `ss -tlnp` | `netstat -ano` + `tasklist` |
-| 分组依据 | 进程 cwd 目录名 | 有 lsof → cwd；无 → 进程名 | 进程名（自动去 `.exe`） |
+| 分组依据 | cwd → git 仓库顶层（自动识别工作区），非 git 目录按 cwd 目录名 | 有 lsof → 同左；无 → 进程名 | 进程名（自动去 `.exe`） |
 | 打开浏览器 | `open <url>` | `xdg-open <url>` | `cmd /c start "" <url>` |
 | 关闭端口 | `kill -TERM <pid…>` | 同左 | `taskkill /T /F /PID …` |
 
@@ -42,6 +42,7 @@ This plugin makes **no network requests**. All data comes from local command out
 | `storage` | 持久化分组折叠状态（键 `collapsed`，仅存组名 → 布尔值） |
 | `exec:uname` | 探测操作系统平台 |
 | `exec:lsof` `exec:ss` | 列出监听端口与进程 cwd（macOS / Linux） |
+| `exec:git` | 从进程 cwd 反查所属 git 仓库顶层目录（工作区自动识别，只读操作） |
 | `exec:netstat` `exec:tasklist` | 列出监听端口与进程名（Windows） |
 | `exec:open` `exec:xdg-open` `exec:cmd` | 调用系统默认浏览器打开 localhost 地址 |
 | `exec:kill` `exec:taskkill` | 结束所选端口的监听进程 |

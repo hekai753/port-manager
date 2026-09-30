@@ -1,7 +1,7 @@
 {
   "id": "port-manager",
   "name": "端口管理",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "tier": "js",
   "author": "hekai753",
   "description": "按工作区/进程分组展示本机监听中的 TCP 端口，分组可折叠，支持一键打开浏览器和关闭端口（自动适配 macOS / Linux / Windows）",
@@ -15,6 +15,7 @@
     "ui:command",
     "storage",
     "exec:uname",
+    "exec:git",
     "exec:lsof",
     "exec:ss",
     "exec:open",
